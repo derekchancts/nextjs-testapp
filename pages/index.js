@@ -1,30 +1,36 @@
+import { useEffect, useState } from 'react'
+import useSWR from 'swr';
+
+import { getFeaturedEvents } from '../helpers/api-util';
 import EventList from "../components/events/event-list";
-import { getFeaturedEvents } from "../dummy-data"
 
 
-const HomePage = () => {
-  const featuredEvents = getFeaturedEvents();
-
+const HomePage = (props) => {
 
   return (
     <div>
       <ul>
-
-        <EventList events={featuredEvents} />
-
-        {/* {
-          featuredEvents.map(event => {
-            return (
-              <li key={event.id}>
-                <EventList event={event} />
-              </li>
-            )
-          })
-        } */}
-
+        <EventList events={props.events} />
       </ul>
     </div>
   )
-}
+};
+
+
+
+export const getStaticProps = async () => {
+  const transformedEvents = await getFeaturedEvents();
+
+  return {
+    props: {
+      events: transformedEvents
+    },
+    revalidate: 1800
+  }
+
+};
+
+
+
 
 export default HomePage

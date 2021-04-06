@@ -1,6 +1,5 @@
-import { Fragment, useEffect, useState } from "react";
+import { Fragment } from "react";
 import { useRouter } from "next/router";
-import useSWR from 'swr';
 
 import EventList from '../../components/events/event-list';
 import ResultsTitle from "../../components/events/results-title";
@@ -12,58 +11,20 @@ import Button from '../../components/ui/button';
 import ErrorAlert from '../../components/ui/error-alert';
 
 
-const FilteredEventsPage = (props) => {
-  const [loadedEvents, setLoadedEvents] = useState([]);
 
+const FilteredEventsPage = (props) => {
   const router = useRouter();
   // console.log(router.query)
-
-  // IF WE NEED CLIEN SIDE FETCHING (TO IMPROVE SPEED ON CERTAIN PAGES, AND WHEN SEO / WEB CRAWLERS ARE NOT AS IMPORTANT)
-  const filteredData = router.query.slug;
-
-  const { data, error } = useSWR('https://nextjs-course-15d9e-default-rtdb.firebaseio.com/events.json');
-
-  
-  useEffect(() => {
-    if (data) {
-      const events = [];
-  
-      for (const key in data) {
-        events.push({
-          id: key,
-          ...data[key]
-        })
-      };
-    
-      // return events;
-      setLoadedEvents(events);
-    }
-  }, [data])
+  //  
 
 
-
-  if (!filteredData) {
-    return <p className='center'>Loading...</p>
-  };
-
-  const filteredYear = filteredData[0];
-  const filteredMonth = filteredData[1];
-
-  const numYear = +filteredYear; // converts string to a number
-  const numMonth = +filteredMonth;
-
-
-
-  // CHECK THE FILTERED EVENTS SELECTED
-  if ( 
-    //props.hasError,
-    isNaN(numYear) ||
-    isNaN(numMonth) ||
-    numYear > 2030 ||
-    numYear < 2021 ||
-    numMonth < 1 ||
-    numMonth > 12 ||
-    error
+  if ( props.hasError
+    // isNaN(numYear) ||
+    // isNaN(numMonth) ||
+    // numYear > 2030 ||
+    // numYear < 2021 ||
+    // numMonth < 1 ||
+    // numMonth > 12
   ) {
     return (
       <Fragment>
@@ -77,24 +38,16 @@ const FilteredEventsPage = (props) => {
   };
 
 
-  // FILTER THE EVENTS
-  const filteredEvents = loadedEvents.filter((event) => {
-    const eventDate = new Date(event.date);
-    return eventDate.getFullYear() === numYear && eventDate.getMonth() === numMonth - 1;
-  });
-
-
 
   // const filteredEvents = getFilteredEvents({
   //   year: numYear,
   //   month: numMonth
   // });
 
-  // const filteredEvents = props.events;
+  const filteredEvents = props.events;
+
 
   // console.log(filteredEvents)
-
-  // IF WE DO NOT HAVE TEH FILTERED EVENTS
   if (!filteredEvents || filteredEvents.length === 0) {
     return (
       <Fragment>
@@ -106,8 +59,10 @@ const FilteredEventsPage = (props) => {
     )
   };
 
-  const date = new Date(numYear, numMonth - 1);
-  // const date = new Date(props.numYear, props.numMonth - 1);
+
+  // const date = new Date(numYear, numMonth - 1);
+  const date = new Date(props.numYear, props.numMonth - 1);
+
 
   return (
     <Fragment>
@@ -119,7 +74,6 @@ const FilteredEventsPage = (props) => {
 
 
 
-/*
 export const getServerSideProps = async(context) => {
   const { params } = context;
 
@@ -137,7 +91,7 @@ export const getServerSideProps = async(context) => {
     numYear > 2030 ||
     numYear < 2021 ||
     numMonth < 1 ||
-    numMonth > 12 
+    numMonth > 12
   ) {
     return {
       // server side props - we do not return JSX, but always an OBJECT instead
@@ -171,7 +125,7 @@ export const getServerSideProps = async(context) => {
     }
   };
 };
-*/
+
 
 
 export default FilteredEventsPage;
