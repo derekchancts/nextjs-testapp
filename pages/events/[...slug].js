@@ -1,6 +1,7 @@
 import { Fragment, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import useSWR from 'swr';
+import Head from 'next/head';
 
 import EventList from '../../components/events/event-list';
 import ResultsTitle from "../../components/events/results-title";
@@ -42,8 +43,31 @@ const FilteredEventsPage = (props) => {
 
 
 
+  // const filteredYear = filteredData[0];
+  // const filteredMonth = filteredData[1];
+
+  // const numYear = +filteredYear; // converts string to a number
+  // const numMonth = +filteredMonth;
+
+
+
+  // const pageHeadData = (
+  //   <Head>
+  //     <title>{filteredEvents.title}</title>
+  //     <meta name="description1" content="Find a lot of great events" />
+  //     <meta name="description" content={`All Events for ${numMonth}/${numYear}`} />
+  //   </Head>
+  // );
+
+
+
   if (!filteredData) {
-    return <p className='center'>Loading...</p>
+    return (
+      <Fragment>
+        {/* {pageHeadData} */}
+        <p className='center'>Loading...</p>
+      </Fragment>
+    )
   };
 
   const filteredYear = filteredData[0];
@@ -67,10 +91,10 @@ const FilteredEventsPage = (props) => {
   ) {
     return (
       <Fragment>
-      <ErrorAlert><p>Invalid filter. Please adjust your values.</p></ErrorAlert>
-      <div className="center">
-        <Button link='/events'>Show All Events</Button>
-      </div>
+        <ErrorAlert><p>Invalid filter. Please adjust your values.</p></ErrorAlert>
+        <div className="center">
+          <Button link='/events'>Show All Events</Button>
+        </div>
     </Fragment>
     
     )
@@ -111,6 +135,12 @@ const FilteredEventsPage = (props) => {
 
   return (
     <Fragment>
+      {/* {pageHeadData} */}
+       <Head>
+        <title>{filteredEvents.title}</title>
+        <meta name="description1" content="Find a lot of great events" />
+        <meta name="description" content={`All Events for ${numMonth}/${numYear}`} />
+      </Head>
       <ResultsTitle date={date} />
       <EventList events={filteredEvents}/>
     </Fragment>

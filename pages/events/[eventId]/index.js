@@ -1,9 +1,11 @@
 import { useRouter } from 'next/router';
 import { Fragment } from 'react';
+import Head from 'next/head';
 
 import EventSummary from '../../../components/event-detail/event-summary';
 import EventLogistics from '../../../components/event-detail/event-logistics';
 import EventContent from '../../../components/event-detail/event-content';
+import Comments from '../../../components/input/comments';
 
 // import { getEventById } from '../../../dummy-data';
 import { getEventById, getAllEvents, getFeaturedEvents } from '../../../helpers/api-util';
@@ -32,6 +34,11 @@ const EventDetailPage = (props) => {
 
   return (
    <Fragment>
+     <Head>
+        <title>{selectedEvent.title}</title>
+        <meta name="description1" content="Find a lot of great events" />
+        <meta name="description" content={selectedEvent.description} />
+      </Head>
      <EventSummary title={selectedEvent.title} />
      <EventLogistics  
       date={selectedEvent.date}
@@ -42,6 +49,7 @@ const EventDetailPage = (props) => {
      <EventContent>
        <p>{selectedEvent.description}</p>
      </EventContent>
+     <Comments eventId={selectedEvent.id} />
    </Fragment>
   )
 }
