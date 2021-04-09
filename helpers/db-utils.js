@@ -1,8 +1,9 @@
+require('dotenv').config()
 import { MongoClient } from 'mongodb';
 
 
 export async function connectDatabase() {
-  
+  const url = process.env.URL;
   const client = await MongoClient.connect(url);
 
   return client;

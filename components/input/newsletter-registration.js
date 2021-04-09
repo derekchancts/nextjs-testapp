@@ -1,10 +1,13 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useContext } from 'react';
+import NotificationContext from '../../store/notification-context';
 import classes from './newsletter-registration.module.css';
 
 
 function NewsletterRegistration() {
   const [isInvalid, setisInvalid] = useState(false)
   const emailRef = useRef();
+
+  const notificationCtx = useContext(NotificationContext);
 
   
   function registrationHandler(event) {
@@ -31,19 +34,64 @@ function NewsletterRegistration() {
     // };
 
 
+    notificationCtx.showNotification({
+      title: 'Signing up...',
+      message: 'Registering for newsletter',
+      status: 'pending'
+    });
+
+
     fetch('/api/newsletter', {
       method: 'POST',
       body: JSON.stringify({ email }),
       headers: {'Content-Type': 'application/json'}
     })
-    .then(response => response.json())
-    .then(data => console.log(data))
-    .catch(err => console.log(err)) 
+    .then(response => {
+      if (response.ok) {
+        return response.json();
+      }
+      // FETCH - ERROR HTTP CODE (STATUS 400 AND 500 ETC) WILL NOT CAUSE THE PROMISE TO FAIL
+      // STATUS 400 AND 500 WILL NOT BE CATCHED IF WE HAVE AN ERROR. SO, WE NEED TO IMPLEMENT THE BELOW MANUALLY
+      // THEN RETURN THE BELOW PROMISE CHAIN
+      // THEN WE WILL BE PASSED TO THE "CATCH" IF WE DO HAVE AN ERROR
+      return response.json().then(data => {
+        throw new Error(data.message || 'Something went wrong');
+      });
+
+    })
+    .then(data => {
+      console.log(data);
+
+      notificationCtx.showNotification({
+        title: 'Success!',
+        message: 'Succesfully registered for newsletter',
+        status: 'success'
+      });
+
+      // setTimeout(() => {
+      //   notificationCtx.hideNotification()
+      // }, 3000);
+
+    })
+    .catch(err => {
+      console.log(err);
+
+      notificationCtx.showNotification({
+        title: 'Error',
+        message: err.message || 'Something went wrong',
+        status: 'error'
+      });
+
+      // setTimeout(() => {
+      //   notificationCtx.hideNotification()
+      // }, 3000);
+
+    }); 
 
     setisInvalid(false);
     emailRef.current.value = '';
    
-  }
+  };
 
 
 
